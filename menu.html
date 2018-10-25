@@ -1,0 +1,107 @@
+<!--***********************************************************************
+MIT License
+
+Copyright (c) 2018 daubedesign
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+************************************************************************-->
+
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <style>
+    </style>
+  </head>
+  
+  <body>
+    <form class="form-group">
+      <label for="primaryColor">Primary color: </label>
+      <input type="color" id="primaryColor" size="50" onblur="updatePrimaryColor(primaryColor.value)">
+      <br>
+      <label for="secondaryColor">Secondary color: </label>
+      <input type="color" id="secondaryColor" size="50" onblur="updateSecondaryColor(secondaryColor.value)">
+      <br>
+      <label for="logo">Company logo: </label>
+      <input type="url" id="logo" size="50" onblur="updateLogoUrl(logo.value)">
+      <br>
+      <label for="logo">Logo width: </label>
+      <input type="number" id="logoWidth" size="50" onblur="updateLogoWidth(logoWidth.value)">
+      <br>
+      <label for="logo">Logo height: </label>
+      <input type="number" id="logoHeight" size="50" onblur="updateLogoHeight(logoHeight.value)">
+    </form>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          google.script.run.withSuccessHandler(onSuccess)
+              .getConfiguration();
+      }, false);
+	      
+          function onSuccess(configs) {
+            document.getElementById('primaryColor').value = configs.primaryColorCode
+            document.getElementById('secondaryColor').value = configs.secondaryColorCode
+            document.getElementById('logo').value = configs.logoUrl
+            document.getElementById('logoWidth').value = configs.logoWidth
+            document.getElementById('logoHeight').value = configs.logoHeight
+          }
+          
+    
+    function updatePrimaryColor(color) {
+    try {
+          google.script.run.updatePrimaryColor(color);
+        } catch (err) {
+          google.script.run.displayToast(err);
+        }
+    }
+    
+    function updateSecondaryColor(color) {
+    try {
+          google.script.run.updateSecondaryColor(color);
+        } catch (err) {
+          google.script.run.displayToast(err);
+        }
+    }
+    function updateLogoUrl(url) {
+    try {
+          google.script.run.updateLogoUrl(url);
+        } catch (err) {
+          google.script.run.displayToast(err);
+        }
+    }
+    function updateLogoWidth(width) {
+    try {
+          google.script.run.updateLogoWidth(width);
+        } catch (err) {
+          google.script.run.displayToast(err);
+        }
+    }
+    function updateLogoHeight(height) {
+    try {
+          google.script.run.updateLogoHeight(height);
+        } catch (err) {
+          google.script.run.displayToast(err);
+        }
+    }  
+
+    </script>
+  </body>
+
+</html>

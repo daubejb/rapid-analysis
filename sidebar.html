@@ -1,0 +1,171 @@
+<!--***********************************************************************
+MIT License
+
+Copyright (c) 2018 daubedesign
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+************************************************************************-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <style>
+.branding-below {
+  bottom: 56px;
+  top: 0;
+}
+.branding-text {
+  left: 7px;
+  position: relative;
+  top: 3px;
+}
+.col-contain {
+  overflow: hidden;
+}
+.col-one {
+  float: left;
+  width: 50%;
+}
+.logo {
+  vertical-align: middle;
+}
+.radio-spacer {
+  height: 20px;
+}
+.width-100 {
+  width: 100%;
+}
+
+#events {
+  margin-left: 20px;
+}
+    </style>
+  </head>
+  <body>
+    <div class="sidebar branding-below">
+
+        <div class="block"><label><b>Templates</b></label></div>
+        <div class="block">
+          <input type="radio" name="type" id="radioExecutiveSummary" value="" checked="checked" onchange="handleRadioChange(this)">
+          <label for="radioExecutiveSummary">Executive summary</label>
+        </div>
+        <div class="block">
+          <input type="radio" name="type" id="radioObjectives" value="" onchange="handleRadioChange(this)">
+          <label for="radioObjectives">Objectives and success criteria</label>
+        </div>
+        <div class="block">
+          <input type="radio" name="type" id="radioProblemStatement" value="" onchange="handleRadioChange(this)">
+          <label for="radioProblemStatement">Problem statement</label>
+        </div>
+        <div class="block">
+          <input type="radio" name="type" id="radioRaciMatrix" value="" onchange="handleRadioChange(this)">
+          <label for="radioRaciMatrix">RACI Matrix</label>
+        </div>
+        <div class="block">
+          <input type="radio" name="type" id="radioUserStories" value="" onchange="handleRadioChange(this)">
+          <label for="radioUserStories">User stories table</label>
+        </div>
+        <div class="block"><label><b>Meeting notes</b></label></div>
+        <div class="block">
+          <input type="radio" name="type" id="radioMeetingNotes" value="" onchange="handleRadioChange(this)">
+          <label for="radioMeetingNotes">Meeting notes</label>
+        </div>
+        <div class="block" id="todaysMeetings" style="display:none">
+          <label><b>Today's meetings</b></label>
+          <div id="events"></div>
+        </div>
+
+        <div class="block" id="button-bar">
+          <button class="blue" id="insert-template" onclick="insertTemplate(radioExecutiveSummary.checked, radioProblemStatement.checked, radioRaciMatrix.checked, radioMeetingNotes.checked, radioUserStories.checked, radioObjectives.checked)">Insert</button>
+        </div>
+
+    </div>
+
+    <div class="sidebar bottom">
+      <img alt="Add-on logo" class="logo" src="https://storage.googleapis.com/daube-design-assets.appspot.com/daubedesign.png" width="27" height="27">
+      <span class="gray branding-text">Rapid Analysis by daubedesign</span>
+    </div>
+    <script>
+    
+    function insertTemplate(radioExecutiveSummary, radioProblemStatement, radioRaciMatrix, radioMeetingNotes, radioUserStories, radioObjectives) {
+      try {
+        if (radioExecutiveSummary) {
+          google.script.run.insertTemplate('Executive Summary')
+        } else if (radioProblemStatement) {
+          google.script.run.insertTemplate('Problem Statement')
+        } else if (radioRaciMatrix) {
+          google.script.run.insertTemplate('Raci Matrix')
+        } else if (radioObjectives) {
+          google.script.run.insertTemplate('Objectives')
+        } else if (radioUserStories) {
+          google.script.run.insertTemplate('User Stories Table')
+        } else if (radioMeetingNotes) {
+          var events = document.getElementsByName("event")
+          var selectedEvent = ''
+          for (var i = 0, len = events.length; i < len; i++) {
+            var e = events[i]
+            if (e.checked == true) {
+              selectedEvent = e.id
+            }
+          }
+          google.script.run.insertTemplate('Meeting Notes', selectedEvent)
+          
+        }
+      } catch (err) {
+//        google.script.run.displayToast(err)
+      }
+    }
+    
+    function handleRadioChange(radio) {
+      var meetingsSection = document.getElementById("todaysMeetings")
+      if (radio.id == 'radioMeetingNotes') {
+          meetingsSection.style.display = "block"
+        displayTodaysMeetings()
+        
+      } else {
+          meetingsSection.style.display = "none"
+      }
+    }
+    
+    function displayTodaysMeetings() {
+      google.script.run.withSuccessHandler(onSuccess)
+            .getEventsFromToday()
+      function onSuccess(val) {
+        var calendarEvents = JSON.parse(val)
+        var meetingsSection = document.getElementById("todaysMeetings")
+        var events = document.getElementById("events")
+        if (calendarEvents.length > 0) {
+          var meetingsCards = '<br>'
+          var firstEventId = calendarEvents[0].id
+          for (var i = 0, len = calendarEvents.length; i < len; i++) {
+            var c = calendarEvents[i]
+            meetingsCards += '<div class="block"><input type="radio" name="event" id="' + c.id + '" value=""><label for="' + c.id + '"><b>' + c.title + '</b><br>' + c.location + ' (' + c.startTime + ' - ' + c.endTime + ')</label></div>'
+          }
+        events.innerHTML = meetingsCards
+        var event0 = document.getElementById(firstEventId).checked = true
+      }  else {
+        events.innerHTML = '<br>There are no meetings on your calendar today.'
+      }
+    }
+  }
+    </script>
+    </body>
+    </html>
